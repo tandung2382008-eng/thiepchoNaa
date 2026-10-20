@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cả một vườn thương</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,500;1,400&family=Mali:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden;font-family:'Noto Serif',Georgia,serif;color:#2b2a33}
+#sky{position:fixed;inset:0;background:linear-gradient(#fdf1c4,#eef3cf 60%,#f7f1d4)}
+#sky2{position:fixed;inset:0;background:linear-gradient(#78c1ee,#cfe9f4 55%,#eaf5f2);opacity:0;transition:opacity 4s}
+body.bloom #sky2{opacity:1}
+.cloud{position:fixed;background:#fff;border-radius:50%;filter:blur(26px);opacity:.75;animation:drift 50s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translateX(90px)}}
+canvas{position:fixed;inset:0;width:100%;height:100%;cursor:pointer}
+#tag{position:fixed;left:24px;top:20px;font-style:italic;font-size:15px;opacity:.7}
+#hint{position:fixed;left:0;right:0;top:15vh;text-align:center;padding:0 20px;pointer-events:none;transition:opacity 1.2s}
+#hint h1{font-weight:400;font-size:clamp(26px,4vw,40px)}
+#hint p{font-size:13px;margin-top:10px;opacity:.7}
+body.bloom #hint{opacity:0}
+#card{position:fixed;left:50%;top:50%;width:min(420px,90vw);max-height:86vh;overflow:auto;transform:translate(-50%,-46%) rotate(-1deg);
+ font-family:'Mali','Noto Serif',cursive;
+ background:radial-gradient(circle at 20% 0,#fff 0,transparent 50%),linear-gradient(160deg,#fff8fb,#ffeef4 55%,#fff3e6);
+ padding:44px 30px 26px;text-align:center;border-radius:26px;border:3px solid #fff;
+ box-shadow:0 0 0 2px #ffc2d4,0 20px 50px rgba(214,110,150,.28);
+ opacity:0;pointer-events:none;transition:opacity 1.2s,transform 1.2s;scrollbar-width:thin;scrollbar-color:#f7a8c0 transparent}
+#card.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) rotate(-1deg)}
+#card .tape{position:absolute;left:50%;top:-4px;width:110px;height:26px;transform:translateX(-50%) rotate(3deg);
+ background:repeating-linear-gradient(45deg,#ffd1de 0 8px,#fff2f6 8px 16px);opacity:.9;border-radius:3px;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+#card .fl{position:absolute;width:34px;height:34px;opacity:.9;animation:wob 4s ease-in-out infinite alternate}
+#card .fl.a{left:8px;top:14px}#card .fl.b{right:8px;top:14px;transform:scaleX(-1);animation-delay:-2s}
+@keyframes wob{to{transform:rotate(12deg) scale(1.08)}}
+#card .fl.b{animation-name:wob2}@keyframes wob2{to{transform:scaleX(-1) rotate(12deg) scale(1.08)}}
+#card .ic{width:46px;height:54px;margin-bottom:10px}
+#card .to{font-size:15px;color:#c0577d}
+#card h2{font-weight:500;font-size:clamp(23px,5vw,29px);line-height:1.45;margin:14px 0 6px;color:#b23a67}
+#card .dv{color:#f48fb1;letter-spacing:8px;font-size:13px;margin:6px 0 16px}
+#card p{font-size:13.5px;line-height:1.9;margin-bottom:14px;color:#6b4a58}
+#card .sign{font-size:16px;margin-top:18px;color:#c0577d}
+#card button{margin-top:20px;font:inherit;font-size:14px;color:#fff;background:linear-gradient(135deg,#f7a1bd,#ee6f97);
+ border:0;border-radius:99px;padding:10px 24px;cursor:pointer;box-shadow:0 6px 16px rgba(238,111,151,.4);transition:transform .2s}
+#card button:hover{transform:translateY(-2px) scale(1.04)}
+#card .hp{position:absolute;color:#f7a1bd;pointer-events:none;animation:fl 3.5s ease-in-out infinite}
+@keyframes fl{50%{transform:translateY(-6px) rotate(10deg);opacity:.5}}
+#bar{position:fixed;left:0;right:0;bottom:24px;display:flex;justify-content:center;gap:12px;opacity:0;pointer-events:none;transition:opacity 1s}
+#bar.show{opacity:1;pointer-events:auto}
+#bar button{font:inherit;font-size:13px;padding:10px 20px;border:0;border-radius:99px;background:rgba(255,255,255,.85);color:#b23a67;font-family:'Mali',cursive;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+#bar button:hover{background:#fff}
+</style>
+</head>
+<body>
+<div id="sky"></div><div id="sky2"></div>
+<div class="cloud" style="left:5%;top:12%;width:340px;height:90px"></div>
+<div class="cloud" style="right:2%;top:30%;width:420px;height:110px;animation-delay:-20s"></div>
+<canvas id="c"></canvas>
+<div id="tag">Dành bé iu của Dâu, cả một vườn thương.</div>
+<div id="hint"><h1>Từ một bông hoa nhỏ…</h1><p>Chạm vào hoa, một điều dịu dàng đang chờ bạn</p></div>
+
+<!-- ===== NỘI DUNG THIỆP: sửa chữ ở đây ===== -->
+<div id="card">
+  <svg width="0" height="0" style="position:absolute"><defs><symbol id="flw" viewBox="0 0 40 40">
+   <g fill="#ffb3c8" stroke="#ee6f97" stroke-width="1.2"><circle cx="20" cy="9" r="7"/><circle cx="31" cy="17" r="7"/><circle cx="27" cy="30" r="7"/><circle cx="13" cy="30" r="7"/><circle cx="9" cy="17" r="7"/></g>
+   <circle cx="20" cy="20" r="6" fill="#ffe27a" stroke="#f5b83a" stroke-width="1.2"/></symbol></defs></svg>
+  <div class="tape"></div>
+  <svg class="fl a"><use href="#flw"/></svg><svg class="fl b"><use href="#flw"/></svg>
+  <span class="hp" style="left:14%;top:96px">♡</span><span class="hp" style="right:12%;top:150px;animation-delay:-1s">✦</span>
+  <svg class="ic" viewBox="0 0 44 52"><path d="M22 50V30" stroke="#3b6b4f" stroke-width="1.5" fill="none"/>
+   <path d="M22 8c-8 0-12 6-11 12 1 6 6 10 11 10s10-4 11-10c1-6-3-12-11-12z" fill="#ef9fb4" stroke="#3b6b4f" stroke-width="1.5"/>
+   <path d="M22 40c-6 0-9-3-9-6 5 0 9 2 9 6z" fill="#fff" stroke="#3b6b4f" stroke-width="1.5"/></svg>
+  <div class="to">Gửi bé Na đáng iuu,</div>
+  <h2>Mong những<br>điều đẹp đẽ<br>luôn nở bên Na như những đóa hoa này.</h2>
+  <div class="dv">✿ ♡ ✿</div>
+  <p>Một bông hoa có thể làm một ngày thêm đẹp.<br>Còn Na làm cho thế giới này dịu dàng hơn.</p>
+  <p>Nhân ngày 20/10, Dâu chúc Na luôn được yêu thương, trân trọng và có thật nhiều niềm vui. Mong Na đủ bình yên để tận hưởng những điều nhỏ bé, đủ tự tin để theo đuổi những điều mình yêu.</p>
+  <p>Hôm nay và cả những ngày sau,<br>hãy cứ rạng rỡ theo cách của riêng mình nhé.</p>
+  <div class="sign">Gửi bé Na của tui thật nhiều thương mếnnn ♡</div>
+  <button id="close">Ngắm vườn hoa ✿</button>
+</div>
+<div id="bar"><button id="again">Đọc lại thiệp</button><button id="regrow">Cho hoa nở lại</button></div>
+
+<script>
+const cv=document.getElementById('c'),g=cv.getContext('2d'),card=document.getElementById('card'),bar=document.getElementById('bar');
+let W,H,flowers=[],hero,stage=0,t0=0,petals=[];
+const P=[
+ {l:'#ffd6e0',m:'#f48fb1',d:'#c2417a'},{l:'#ffe3d2',m:'#f8b595',d:'#d0704a'},
+ {l:'#f1f9cf',m:'#b9dc96',d:'#6f9f52'},{l:'#e0f0ff',m:'#9ccaef',d:'#4f86b8'},
+ {l:'#ffffff',m:'#efe8e3',d:'#b8a79b'},{l:'#ffc9d6',m:'#ee6f97',d:'#b8315f'}];
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const ease=t=>t<=0?0:t>=1?1:1-Math.pow(1-t,3);
+
+function rose(r,p){
+  const s=Math.ceil(r*2.3),c=document.createElement('canvas');c.width=c.height=s;
+  const x=c.getContext('2d'),ph=rnd(0,6);x.translate(s/2,s/2);
+  for(let i=0;i<9;i++){
+    const rad=r*(1-i*.095),a=i*2.4+ph;
+    x.beginPath();
+    for(let k=0;k<=120;k++){
+      const th=k/120*6.2832,q=rad*(.9+.1*Math.abs(Math.sin(2.5*th+a)))*(1+.03*Math.sin(th*3+i));
+      x[k?'lineTo':'moveTo'](Math.cos(th)*q,Math.sin(th)*q);
+    }
+    const gr=x.createRadialGradient(0,0,rad*.2,0,0,rad);
+    gr.addColorStop(0,p.m);gr.addColorStop(1,p.l);
+    x.fillStyle=gr;x.fill();x.strokeStyle=p.d+'66';x.lineWidth=Math.max(.6,r/40);x.stroke();
+  }
+  x.beginPath();
+  for(let k=0;k<=90;k++){const t=k/90,th=t*6*Math.PI+ph,q=r*.32*t;x[k?'lineTo':'moveTo'](Math.cos(th)*q,Math.sin(th)*q);}
+  x.strokeStyle=p.d+'aa';x.lineWidth=Math.max(.8,r/30);x.stroke();
+  return c;
+}
+function bud(r,p){
+  const s=Math.ceil(r*2.3),c=document.createElement('canvas');c.width=c.height=s;
+  const x=c.getContext('2d');x.translate(s/2,s/2);
+  x.beginPath();x.moveTo(0,r*.8);x.bezierCurveTo(-r*.9,r*.3,-r*.5,-r*.6,0,-r);
+  x.bezierCurveTo(r*.5,-r*.6,r*.9,r*.3,0,r*.8);
+  const gr=x.createLinearGradient(-r,0,r,0);gr.addColorStop(0,p.l);gr.addColorStop(1,p.m);
+  x.fillStyle=gr;x.fill();x.strokeStyle=p.d+'66';x.stroke();
+  x.beginPath();x.moveTo(0,r*.8);x.quadraticCurveTo(-r*.2,0,0,-r*.9);x.stroke();
+  return c;
+}
+function layout(){
+  const D=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;
+  cv.width=W*D;cv.height=H*D;g.setTransform(D,0,0,D,0,0);
+  flowers=[];const m=Math.min(W,H);
+  for(let row=0;row<5;row++){
+    const base=H*(.42+row*.115),r0=m*(.04+row*.017),step=r0*2.1;
+    for(let x=-r0;x<W+r0;x+=step*rnd(.85,1.15)){
+      const p=P[Math.floor(Math.random()*P.length)],isBud=Math.random()<.15,r=r0*rnd(.85,1.2);
+      flowers.push({x:x+rnd(-.3,.3)*step,y:base+rnd(-.04,.04)*H,r,spr:isBud?bud(r*.7,p):rose(r,p),
+        delay:rnd(.4,3.6),ph:rnd(0,6),z:row,bud:isBud});
+    }
+  }
+  const hr=m*.15;
+  hero={x:W/2,y:H*.5,r:hr,spr:rose(hr,P[5]),delay:0,ph:1,z:2.5,hero:true};
+  flowers.push(hero);flowers.sort((a,b)=>a.z-b.z);
+}
+function leaf(x,y,L,rot){
+  g.save();g.translate(x,y);g.rotate(rot);g.beginPath();g.moveTo(0,0);
+  g.quadraticCurveTo(L*.5,-L*.42,L,0);g.quadraticCurveTo(L*.5,L*.42,0,0);
+  g.fillStyle='#3f9a4a';g.fill();g.restore();
+}
+function frame(ts){
+  const sw=ts/1000,t=(ts-t0)/1000;
+  g.clearRect(0,0,W,H);
+  for(const f of flowers){
+    let grow,sc;
+    if(f.hero){
+      grow=1;sc=stage?.6+.4*ease((t-.2)/2.6):.6+Math.sin(sw*2)*.015;
+    }else{
+      if(!stage)continue;
+      grow=ease((t-f.delay)/1.8);if(grow<=0)continue;
+      sc=ease((grow-.45)/.55);
+    }
+    const sway=Math.sin(sw*.9+f.ph)*f.r*.07,hx=f.x+sway,hy=H+20-(H+20-f.y)*grow;
+    g.strokeStyle='#4f8a46';g.lineWidth=Math.max(1.5,f.r/16);
+    g.beginPath();g.moveTo(f.x,H+20);g.quadraticCurveTo(f.x-sway,(H+20+hy)/2,hx,hy);g.stroke();
+    const L=f.r*.55*Math.max(sc,.2);
+    leaf(f.x+(hx-f.x)*.35,hy+(H-hy)*.4,L,-.5);
+    leaf(f.x+(hx-f.x)*.6,hy+(H-hy)*.62,L*.9,Math.PI+.5);
+    if(sc>0){
+      g.save();g.translate(hx,hy);g.rotate(sway/f.r*.2);g.scale(sc,sc);
+      g.drawImage(f.spr,-f.spr.width/2,-f.spr.height/2);g.restore();
+    }
+  }
+  if(stage&&t>3){
+    while(petals.length<28)petals.push({x:rnd(0,W),y:rnd(-H,0),vy:rnd(.4,1),vx:rnd(-.3,.3),r:rnd(4,8),a:rnd(0,6)});
+    for(const p of petals){
+      p.y+=p.vy;p.x+=p.vx+Math.sin(sw+p.a)*.4;p.a+=.02;
+      if(p.y>H+10){p.y=-10;p.x=rnd(0,W);}
+      g.save();g.translate(p.x,p.y);g.rotate(p.a);g.fillStyle='rgba(247,160,186,.75)';
+      g.beginPath();g.ellipse(0,0,p.r,p.r*.55,0,0,6.3);g.fill();g.restore();
+    }
+  }
+  requestAnimationFrame(frame);
+}
+function start(){
+  if(stage)return;stage=1;t0=performance.now();
+  document.body.classList.add('bloom');
+  setTimeout(()=>card.classList.add('show'),5500);
+}
+const showBar=()=>bar.classList.add('show');
+cv.addEventListener('click',start);
+document.getElementById('close').onclick=()=>{card.classList.remove('show');setTimeout(showBar,800)};
+document.getElementById('again').onclick=()=>{bar.classList.remove('show');card.classList.add('show')};
+document.getElementById('regrow').onclick=()=>{bar.classList.remove('show');t0=performance.now();petals=[];setTimeout(showBar,5000)};
+addEventListener('resize',layout);
+layout();requestAnimationFrame(frame);
+</script>
+</body>
+</html>
